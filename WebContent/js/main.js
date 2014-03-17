@@ -109,126 +109,32 @@ function setMap() {
 
   //Custom Control for Info panel
 
-  info.onAdd = function(map) {
-    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
-    this.update();
-    return this._div;
-  };
+//  info.onAdd = function(map) {
+//    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+//    this.update();
+//    return this._div;
+//  };
+//
+//  // method that we will use to update the control based on feature properties passed
+//  info.update = function(props) {
+//    this._div.innerHTML = '<h4>SAN FRANSICO Population</h4>' + (props ?
+//      '<b>' + props + '</b><br />' + props + ' people ' : 'Hover over a state');
+//  };
+//  info.addTo(map);
 
-  // method that we will use to update the control based on feature properties passed
-  info.update = function(props) {
-    this._div.innerHTML = '<h4>SAN FRANSICO Population</h4>' + (props ?
-      '<b>' + props + '</b><br />' + props + ' people ' : 'Hover over a state');
-  };
-  info.addTo(map);
-  //End of Custom Control
-
-  //Marker Cluster Grouping for Bulk loading of points
-  incidentsMarkers = L.markerClusterGroup({
-    chunkedLoading: true
-    // ,    chunkProgress: updateProgressBar
-  });
-
-  zoneMarkers = L.markerClusterGroup({
-    chunkedLoading: true
-    // ,    chunkProgress: updateProgressBar
-  });
-
-  densityMarkers = L.markerClusterGroup({
-    chunkedLoading: true
-    // ,    chunkProgress: updateProgressBar
-  });
-
-  // Using jQUERY to load geojson file￼
-  $.getJSON("data/crimeIncidents.geojson", function(data) {
-    geoJsonLayer = L.geoJson(data, {
-
-      onEachFeature: function(feature, layer) {
-
-        layer.bindPopup("<b>" + feature.properties.Category + "</b><br> " + "<b>Date:</b> " + feature.properties.Date + "<br><b>Address:</b> " + feature.properties.Address);
-      }
-    });
-
-    //Disable loading spinner
+  $.ajax({
+    url:"/LTA/TrafficIncidents",
+      type:'GET'
+  }).done(function(data){
+    console.log(data);
     map.spin(false);
+  }).fail(function(data){
+    console.log(data);
+    map.spin(false);
+  })
 
-    $.getJSON("data/planning_zone.geojson", function(data) {
-      polygonZoning = L.geoJson(data, {
-        style: function(feature) {
-          return {
-            color: '#888888',
-          };
-        },
-        onEachFeature: function(feature, layer) {
-          layer.on('click', function(e) {
-            e.target.bindPopup(feature.properties.name, {
-              'offset': L.point(0, 0)
-            }).openPopup();
-          });
 
-          layer.off('mouseout'),
-          function(e) {
-            console.log(e);
-            e.target.bindPopup(feature.properties.name).closePopup();
-          }
-        }
-      });
 
-      $.getJSON("data/density.geojson", function(data) {
-
-        choropleth = L.geoJson(data, {
-          style: style,
-
-          onEachFeature: function(feature, layer) {
-            layer.on({
-              mouseover: highlightFeature,
-              mouseout: resetHighlight
-              // click: zoomToFeature
-            });
-            // console.log(feature.properties.Pop2010)
-          }
-        });//.addTo(map);
-
-        //Layergroup control for basemap 
-        baseMaps = {
-          "Basemap": baseMapLayer,
-          "Chronomap": chrono,
-          "Night View": midnight
-        };
-
-        //Layergroup control for additional layer (incidents points)
-        overlayMaps = {
-          "Incidents": incidentsMarkers,
-          "Zone": polygonZoning,
-          "Choropleth": choropleth
-          // "Population Density": densityLayer
-        };
-
-        createLegend();
-
-        //Append ILayer to include updated datapoints
-        zoneMarkers.addLayer(polygonZoning);
-        incidentsMarkers.addLayer(geoJsonLayer);
-
-        map.addLayer(polygonZoning);
-        map.fitBounds(polygonZoning.getBounds());
-
-        map.addLayer(incidentsMarkers);
-        map.fitBounds(incidentsMarkers.getBounds());
-
-        map.addLayer(choropleth);
-        map.fitBounds(choropleth.getBounds());
-
-        L.control.layers(baseMaps, overlayMaps).addTo(map);
-      }); //End of .getJSON
-    }); //End of .getJSON
-  }); // End of getJSON
-
-  map.on('baselayerchange', function(e) {
-    if (e.name == "Chrono") {
-      // choropleth();
-    };
-  });
 }; //End of setup()
 
 function createLegend() {

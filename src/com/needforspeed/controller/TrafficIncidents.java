@@ -3,6 +3,7 @@ package com.needforspeed.controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -35,6 +36,7 @@ public class TrafficIncidents extends HttpServlet {
   @Override
   protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException,
       IOException {
+    System.out.println("In servlet");
     // TODO Auto-generated method stub
     final ArrayList<String> list = new ArrayList<String>();
     int skip = 0;
@@ -52,25 +54,32 @@ public class TrafficIncidents extends HttpServlet {
         final BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         String line = null;
         final StringBuilder strBuilder = new StringBuilder();
+        final PrintWriter out = response.getWriter();
         while ((line = br.readLine()) != null) {
           if (skip < 50) {
-            System.out.println(line);
-          }
-          strBuilder.append(line);
-          // System.out.println(line);
-        }
 
-        final String[] splitString = strBuilder.toString().split("<m:properties>");
+            out.println(line);
+            out.flush();
 
-        for (final String str : splitString) {
-          if (str.contains("<d:IncidentID m:type=\"Edm.Int32\">")) {
-            final int a = str.indexOf("<d:IncidentID m:type=\"Edm.Int32\">") + 36;
-            final int b = str.indexOf("</d:IncidentID>");
-            final String incidentID = str.substring(a, b);
-            System.out.println("");
-            System.out.println("id is: " + incidentID);
+          } else {
+            strBuilder.append(line);
+
+            out.println(line);
+            out.flush();
           }
         }
+        out.close();
+        // final String[] splitString = strBuilder.toString().split("<m:entry>");
+
+        // for (final String str : splitString) {
+        // if (str.contains("<d:IncidentID m:type=\"Edm.Int32\">")) {
+        // final int a = str.indexOf("<d:IncidentID m:type=\"Edm.Int32\">") + 36;
+        // final int b = str.indexOf("</d:IncidentID>");
+        // final String incidentID = str.substring(a, b);
+        // list.add(incidentID);
+        //
+        // }
+        // }
 
         // final String[] splitString = strBuilder.toString().split("<m:properties>");
         // for (final String str : splitString) {
