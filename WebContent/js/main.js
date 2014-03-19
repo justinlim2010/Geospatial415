@@ -126,6 +126,8 @@ function setMap() {
     url:"/LTA/TrafficIncidents",
       type:'GET'
   }).done(function(data){
+//    var dom = parseXml(data);
+//    var json = xml2json(data);
     console.log(data);
     map.spin(false);
   }).fail(function(data){

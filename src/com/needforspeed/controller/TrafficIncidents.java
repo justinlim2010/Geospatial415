@@ -15,6 +15,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONObject;
+import org.json.XML;
+
 /**
  * Servlet implementation class TrafficIncidents
  */
@@ -41,9 +44,11 @@ public class TrafficIncidents extends HttpServlet {
     final ArrayList<String> list = new ArrayList<String>();
     int skip = 0;
     boolean cont = true;
+    String line = null;
+    final StringBuilder strBuilder = new StringBuilder();
+    final PrintWriter out = response.getWriter();
     while (cont) {
       final String apiUrl = "http://datamall.mytransport.sg/ltaodataservice.svc/IncidentSet?$skip=" + skip;
-      /* final String apiUrl = "http://datamall.mytransport.sg/ltaodataservice.svc/IncidentSet"; */
       try {
 
         final URL url = new URL(apiUrl);
@@ -52,80 +57,27 @@ public class TrafficIncidents extends HttpServlet {
         conn.addRequestProperty("AccountKey", "JeS9FEbhVVVni7Mzu6HS4A==");
         conn.addRequestProperty("UniqueUserID", "69805977-2bfd-47c6-873e-88fadd92c06a");
         final BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String line = null;
-        final StringBuilder strBuilder = new StringBuilder();
-        final PrintWriter out = response.getWriter();
+
         while ((line = br.readLine()) != null) {
-          if (skip < 50) {
+          strBuilder.append(line);
 
-            out.println(line);
-            out.flush();
+        }
 
-          } else {
-            strBuilder.append(line);
-
-            out.println(line);
-            out.flush();
+        // Method use to get the numbers of entry, if >50 entries, attempt to call REST service to datamall
+        final String[] splitString = strBuilder.toString().split("<m:entry>");
+        for (final String str : splitString) {
+          if (str.contains("<d:IncidentID m:type=\"Edm.Int32\">")) {
+            list.add("");
           }
         }
-        out.close();
-        // final String[] splitString = strBuilder.toString().split("<m:entry>");
 
-        // for (final String str : splitString) {
-        // if (str.contains("<d:IncidentID m:type=\"Edm.Int32\">")) {
-        // final int a = str.indexOf("<d:IncidentID m:type=\"Edm.Int32\">") + 36;
-        // final int b = str.indexOf("</d:IncidentID>");
-        // final String incidentID = str.substring(a, b);
-        // list.add(incidentID);
-        //
-        // }
-        // }
-
-        // final String[] splitString = strBuilder.toString().split("<m:properties>");
-        // for (final String str : splitString) {
-        // System.out.println("the size is: " + list.size());
-        // if (str.contains("<d:BusStopCodeID m:type=\"Edm.Int32\">")) {
-        // int a = str.indexOf("<d:BusStopCodeID m:type=\"Edm.Int32\">") + 36;
-        // int b = str.indexOf("</d:BusStopCodeID>");
-        // final String busStopCodeID = str.substring(a, b);
-        // a = str.indexOf("<d:Code>") + 8;
-        // b = str.indexOf("</d:Code>");
-        // final String code = str.substring(a, b);
-        // a = str.indexOf("<d:Road>") + 8;
-        // b = str.indexOf("</d:Road>");
-        // final String road = str.substring(a, b);
-        // a = str.indexOf("<d:Description>") + 15;
-        // b = str.indexOf("</d:Description>");
-        // final String description = str.substring(a, b);
-        // a = str.indexOf("<d:Layout_Num>") + 14;
-        // b = str.indexOf("</d:Layout_Num>");
-        // final String layout_num = str.substring(a, b);
-        // a = str.indexOf("<d:Max_Pages>") + 13;
-        // b = str.indexOf("</d:Max_Pages>");
-        // final String max_pages = str.substring(a, b);
-        // a = str.indexOf("<d:Summary xml:space=\"preserve\">") + 32;
-        // b = str.indexOf("</d:Summary>");
-        // final String summary = str.substring(a, b);
-        // a = str.indexOf("<d:CreateDate m:type=\"Edm.DateTime\">") + 36;
-        // b = str.indexOf("</d:CreateDate>");
-        // final String createDate = str.substring(a, b);
-        // final busStopCodeSet bs = new busStopCodeSet(busStopCodeID, code, road, description, layout_num, max_pages,
-        // summary, createDate);
-        // list.add(bs);
-        // System.out.println("id is: " + bs.getBusStopCodeID());
-        // }
-        // }
+        // If entries <50, stop REST call to datamall.
         if (list.size() % 50 == 0) {
           skip += 50;
         } else {
           cont = false;
         }
 
-        /*
-         * request.getSession().setAttribute("list", list); request.getSession().setAttribute("xml", wholeXML);
-         * request.getSession().setAttribute("test", "<p>this is a test</p>");
-         */
-        // response.sendRedirect("index.jsp");
       } catch (final MalformedURLException ex) {
         ex.printStackTrace();
       } catch (final IOException ex) {
@@ -134,6 +86,12 @@ public class TrafficIncidents extends HttpServlet {
         ex.printStackTrace();
       } finally {
 
+        // Conversion to XML using org.json library
+        final JSONObject xmlJSONObj = XML.toJSONObject(strBuilder.toString());
+        final String jsonPrettyPrintString = xmlJSONObj.toString();
+        out.println(jsonPrettyPrintString);
+        out.flush();
+        out.close();
       }
     }
   }
