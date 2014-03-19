@@ -127,7 +127,7 @@ public class TrafficIncidents extends HttpServlet {
       } catch (final Exception ex) {
         ex.printStackTrace();
       } finally {
-
+        //
         // Conversion to XML using org.json library
         // final JSONObject xmlJSONObj = XML.toJSONObject(strBuilder.toString());
         // final JSONArray array = new JSONArray();
