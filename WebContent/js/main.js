@@ -96,8 +96,8 @@ function setMap() {
 
   //Setting map with default baseMapLayer and it's coordinate
   map = L.map('map', {
-    center: new L.LatLng(37.7833, -122.41942),
-    zoom: 12,
+    center: new L.LatLng(1.355312,103.827068),
+    zoom: 11,
     layers: [baseMapLayer]
   });
 
@@ -109,26 +109,28 @@ function setMap() {
 
   //Custom Control for Info panel
 
-//  info.onAdd = function(map) {
-//    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
-//    this.update();
-//    return this._div;
-//  };
-//
-//  // method that we will use to update the control based on feature properties passed
-//  info.update = function(props) {
-//    this._div.innerHTML = '<h4>SAN FRANSICO Population</h4>' + (props ?
-//      '<b>' + props + '</b><br />' + props + ' people ' : 'Hover over a state');
-//  };
-//  info.addTo(map);
+  info.onAdd = function(map) {
+    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+    this.update();
+    return this._div;
+  };
+
+  // method that we will use to update the control based on feature properties passed
+  info.update = function(props) {
+    this._div.innerHTML = '<h4>Traffic Congestion</h4>' + (props ?
+      '<b>' + props + '</b><br />' + props + ' people ' : 'Hover over a state');
+  };
+  info.addTo(map);
 
   $.ajax({
     url:"/LTA/TrafficIncidents",
-      type:'GET'
-  }).done(function(data){
-//    var dom = parseXml(data);
-//    var json = xml2json(data);
-    console.log(data);
+      type:'GET',
+        dataType:'json'
+  }).done(function(jsonString){
+    $.each(jsonString,function(index,element){
+      console.log(element);
+    });
+//    console.log(data);
     map.spin(false);
   }).fail(function(data){
     console.log(data);

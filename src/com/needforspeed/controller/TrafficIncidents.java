@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.XML;
 
@@ -88,8 +89,10 @@ public class TrafficIncidents extends HttpServlet {
 
         // Conversion to XML using org.json library
         final JSONObject xmlJSONObj = XML.toJSONObject(strBuilder.toString());
-        final String jsonPrettyPrintString = xmlJSONObj.toString();
-        out.println(jsonPrettyPrintString);
+        final JSONArray array = new JSONArray();
+        array.put(xmlJSONObj);
+        // final String jsonPrettyPrintString = xmlJSONObj.toString();
+        out.println(array);
         out.flush();
         out.close();
       }
