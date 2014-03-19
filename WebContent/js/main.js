@@ -128,19 +128,72 @@ function setMap() {
       type:'GET',
         dataType:'json'
   }).done(function(jsonArray){
+	  var features = [];
     $.each(jsonArray,function(index,element){
       $.each(element,function(index,element){
         qqq=element;
-        console.log(element);
+        
+        // Create coordinate data
+        var coordinate = [element.long, element.lat];
+        
+        // Create the geometry data
+        var geometry = {"type":"Point", "coordinates":coordinate};
+        
+        // Create the properties data
+        var properties = {"incidentId":element.incidentId,
+        		"incidentType":element.type,
+        		"description":element.description};
+        
+        // Create the jsonObject
+        var jsonObj = {"type":"Feature",
+        		"geometry":geometry,
+        		"properties":properties};
+        
+        // Push to JSONList
+        features.push(jsonObj);
       });
     });
+    
+    // Create GeoJSON Object
+    var geoJson = {"type":"FeatureCollection",
+    	"features":features};
+    
+    console.log(geoJson);
+    
+    // Map geoJson
+    var incidentLayer = L.geoJson(geoJson, {
+    	onEachFeature: function(feature, layer) {
+        layer.on('mouseover', function(e) {
+            e.target.bindPopup(feature.properties.description).openPopup();
+          });
+        }
+    });
+    
+    // Marker Cluster
+    var incidentLayerCluster = new L.MarkerClusterGroup();
+    incidentLayerCluster.addLayer(incidentLayer);
+    map.addLayer(incidentLayerCluster);
+    
+    //Layergroup control for basemap 
+    baseMaps = {
+      "Basemap": baseMapLayer,
+      "Chronomap": chrono,
+      "Night View": midnight
+    };
+
+    //Layergroup control for additional layer (incidents points)
+    overlayMaps = {
+      "Incidents": incidentLayerCluster
+      // "Population Density": densityLayer
+    };
+    
+    L.control.layers(baseMaps, overlayMaps).addTo(map);
+    
     map.spin(false);
   }).fail(function(data){
     console.log(data);
     map.spin(false);
-  })
-
-
+  });
 
 }; //End of setup()
 
@@ -185,16 +238,16 @@ function choropleth() {
 
   });
 
-  // map.on('mouseover', function(e) {
-  //   console.log(e)
-  // });
-  // console.log(polygonZoning);
-  // var temp = overlayMaps;
-  // overlayMaps = {
-  //   "Incidents": temp.Incidents,
-  //   "Zone": polygonZoning
-  // }
-  // console.log(overlayMaps);
+   map.on('mouseover', function(e) {
+     console.log(e)
+   });
+   console.log(polygonZoning);
+   var temp = overlayMaps;
+   overlayMaps = {
+     "Incidents": temp.Incidents,
+     "Zone": polygonZoning
+   }
+   console.log(overlayMaps);
 }
 
 function infoPanel() {
