@@ -1,5 +1,6 @@
 //global variables
 //Defining Web service from Cloudmade and specifying API key
+var qqq;
 var baseMapLayerURL = 'http://{s}.tile.cloudmade.com/{key}/{styleId}/256/{z}/{x}/{y}.png';
 var baseMapLayerAttribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>';
 var baseMaps;
@@ -126,11 +127,13 @@ function setMap() {
     url:"/LTA/TrafficIncidents",
       type:'GET',
         dataType:'json'
-  }).done(function(jsonString){
-    $.each(jsonString,function(index,element){
-      console.log(element);
+  }).done(function(jsonArray){
+    $.each(jsonArray,function(index,element){
+      $.each(element,function(index,element){
+        qqq=element;
+        console.log(element);
+      });
     });
-//    console.log(data);
     map.spin(false);
   }).fail(function(data){
     console.log(data);
@@ -158,7 +161,6 @@ function createLegend() {
         '<i style="background:' + getColor(incidents[i] + 1) + '"></i> ' +
         incidents[i] + (incidents[i + 1] ? '&ndash;' + incidents[i + 1] + '<br>' : '+');
     }
-
     return div;
   };
 

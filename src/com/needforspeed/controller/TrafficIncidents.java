@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.XML;
 
 /**
  * Servlet implementation class TrafficIncidents
@@ -48,6 +47,8 @@ public class TrafficIncidents extends HttpServlet {
     String line = null;
     final StringBuilder strBuilder = new StringBuilder();
     final PrintWriter out = response.getWriter();
+    final JSONArray array = new JSONArray();
+    final JSONObject convertedJSONObj = new JSONObject();
     while (cont) {
       final String apiUrl = "http://datamall.mytransport.sg/ltaodataservice.svc/IncidentSet?$skip=" + skip;
       try {
@@ -59,15 +60,55 @@ public class TrafficIncidents extends HttpServlet {
         conn.addRequestProperty("UniqueUserID", "69805977-2bfd-47c6-873e-88fadd92c06a");
         final BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-        while ((line = br.readLine()) != null) {
-          strBuilder.append(line);
+        // while ((line = br.readLine()) != null) {
+        // wholeXML += line;
+        // strBuilder.append(line);
+        //
+        // }
+        // System.out.println(wholeXML);
+        // // Method use to get the numbers of entry, if >50 entries, attempt to call REST service to datamall
+        // final String[] splitString = strBuilder.toString().split("<m:entry>");
+        // for (final String str : splitString) {
+        // if (str.contains("<d:IncidentID m:type=\"Edm.Int32\">")) {
+        // list.add("");
+        // }
+        // }
 
+        while ((line = br.readLine()) != null) {
+
+          strBuilder.append(line);
+          // System.out.println(line);
         }
 
-        // Method use to get the numbers of entry, if >50 entries, attempt to call REST service to datamall
-        final String[] splitString = strBuilder.toString().split("<m:entry>");
+        // System.out.println(strBuilder);
+        final String[] splitString = strBuilder.toString().split("<entry>");
         for (final String str : splitString) {
+
           if (str.contains("<d:IncidentID m:type=\"Edm.Int32\">")) {
+            int a = str.indexOf("<d:IncidentID m:type=\"Edm.Int32\">") + 36;
+            int b = str.indexOf("</d:IncidentID>");
+            final String incidentID = str.substring(a, b);
+            a = str.indexOf("<geo:long xmlns:geo=\"http://www.georss.org/georss\">") + 51;
+            b = str.indexOf("</geo:long>");
+            final String geoLong = str.substring(a, b);
+            a = str.indexOf("<geo:lat xmlns:geo=\"http://www.georss.org/georss\">") + 50;
+            b = str.indexOf("</geo:lat>");
+            final String geoLat = str.substring(a, b);
+            a = str.indexOf("<d:Type>") + 8;
+            b = str.indexOf("</d:Type>");
+            final String type = str.substring(a, b);
+            a = str.indexOf("<title type=\"text\">") + 19;
+            b = str.indexOf("</title>");
+            final String description = str.substring(a, b);
+            final JSONObject obj = new JSONObject();
+            obj.put("incidentID", incidentID);
+            obj.put("type", type);
+            obj.put("long", geoLong);
+            obj.put("lat", geoLat);
+            obj.put("description", description);
+            array.put(obj);
+            convertedJSONObj.put("traffic", array);
+
             list.add("");
           }
         }
@@ -88,11 +129,11 @@ public class TrafficIncidents extends HttpServlet {
       } finally {
 
         // Conversion to XML using org.json library
-        final JSONObject xmlJSONObj = XML.toJSONObject(strBuilder.toString());
-        final JSONArray array = new JSONArray();
-        array.put(xmlJSONObj);
+        // final JSONObject xmlJSONObj = XML.toJSONObject(strBuilder.toString());
+        // final JSONArray array = new JSONArray();
+        // array.put(xmlJSONObj);
         // final String jsonPrettyPrintString = xmlJSONObj.toString();
-        out.println(array);
+        out.println(convertedJSONObj);
         out.flush();
         out.close();
       }
