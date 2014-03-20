@@ -174,6 +174,21 @@ function setMap() {
     incidentLayerCluster.addLayer(incidentLayer);
     map.addLayer(incidentLayerCluster);
     
+    // Added road section
+    var roadSectionLine = L.geoJson(null, {
+    	style: function (feature) {
+    		return {
+    			color: "#000", weight: 2, opacity: 1
+    		};
+    	}
+    });
+    // Add road shapefile
+    $.getJSON("data/RoadSectionLine.geojson", function (data) {
+    	roadSectionLine.addData(data);
+    	roadSectionLine.addTo(map);
+    	console.log(data);
+    });
+    
     //Layergroup control for basemap 
     baseMaps = {
       "Basemap": baseMapLayer,
@@ -183,7 +198,8 @@ function setMap() {
 
     //Layergroup control for additional layer (incidents points)
     overlayMaps = {
-      "Incidents": incidentLayerCluster
+      "Incidents": incidentLayerCluster,
+      "Road Section": roadSectionLine
       // "Population Density": densityLayer
     };
     
