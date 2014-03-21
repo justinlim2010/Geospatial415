@@ -133,6 +133,12 @@ public class TrafficIncidents extends HttpServlet {
         // final JSONArray array = new JSONArray();
         // array.put(xmlJSONObj);
         // final String jsonPrettyPrintString = xmlJSONObj.toString();
+        response.addHeader("Access-Control-Allow-Origin", "*");
+        response.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, HEAD");
+        response.addHeader("Access-Control-Allow-Headers",
+            "X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept");
+        response.addHeader("Access-Control-Max-Age", "1728000");
+
         out.println(convertedJSONObj);
         out.flush();
         out.close();
