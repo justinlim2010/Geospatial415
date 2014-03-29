@@ -12,6 +12,7 @@ var zoneMarkers;
 var densityMarkers;
 var config;
 var info = L.control();
+var sidebar;
 // begin script when window loads
 window.onload = initialize(); // ->
 
@@ -20,7 +21,6 @@ var map; // map object
 // the first function called once the html is loaded
 function initialize()
 {
-
   setMap();
   drawPlot();
 };
@@ -223,6 +223,11 @@ function setMap()
     };
 
     L.control.layers( baseMaps, overlayMaps ).addTo( map );
+    
+    sidebar = L.control.sidebar("sidebar", {
+  	  closeButton: true,
+  	  position: "left"
+  	}).addTo(map);
 
     map.spin( false );
   } ).fail( function( data )
