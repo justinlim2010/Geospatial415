@@ -36,11 +36,11 @@ function initialize()
   };
   var RoadSectionFeature = function( feature, layer ) {};
   var roadSectionLayerName = "Road Section";
-  setOverlayMap(roadSectionFileLocation, roadSectionStyle, RoadSectionFeature, roadSectionLayerName);
+  setOverlayMapFile(roadSectionFileLocation, roadSectionStyle, RoadSectionFeature, roadSectionLayerName);
   
   // Get ERP Gantry data and add to overlayMaps
   var ERPGantryFileLocation = "data/ERPGantryPoint.geojson";
-  var ERPGrantryStyle = function( feature ) {
+  var ERPGantryStyle = function( feature ) {
 	  return {
 		  color : "#0000FF",
 		  weight : 5,
@@ -53,7 +53,7 @@ function initialize()
 	  } );
   };
   var ERPGantryLayerName = "ERP Gantry";
-  setOverlayMap(ERPGantryFileLocation, ERPGrantryStyle, ERPGantryFeature, ERPGantryLayerName);
+  setOverlayMapFile(ERPGantryFileLocation, ERPGantryStyle, ERPGantryFeature, ERPGantryLayerName);
 };
 
 /* This function will set the base map */
@@ -101,8 +101,8 @@ function setBaseMap()
   controlLayer.addTo( map );
 };
 
-/* This function will set the base map */
-function setOverlayMap(fileLoc, layerStyle, layerFeature, layerName) {
+/* This function will set the overlay map from file */
+function setOverlayMapFile(fileLoc, layerStyle, layerFeature, layerName) {
 	// Display loading notification
 	map.spin( true );
 	
@@ -126,6 +126,30 @@ function setOverlayMap(fileLoc, layerStyle, layerFeature, layerName) {
 		controlLayer = L.control.layers( baseMaps, overlayMaps );
 		controlLayer.addTo( map );
 	} );
+}
+
+/* This function will set the overlay map from variable */
+function setOverlayMapVar(file, layerStyle, layerFeature, layerName) {
+	// Display loading notification
+	map.spin( true );
+	
+	var overlay = L.geoJson( null, {
+	  style : layerStyle,
+	  onEachFeature : layerFeature
+	} );
+	
+	// Add GeoJSON data
+	overlay.addData( file );
+	overlay.addTo( map );
+	console.log( file );
+	
+	// Add layer to layer control
+	overlayMaps[layerName] = overlay;
+	
+	// Remove and update control layer
+	controlLayer.removeFrom( map );
+	controlLayer = L.control.layers( baseMaps, overlayMaps );
+	controlLayer.addTo( map );
 }
 
 function getRoadIncidentData()
@@ -216,6 +240,43 @@ function setSidebar()
 	  	}).addTo(map);
 }
 
+function uploadSHP()
+{
+	// Set opencpu url
+	ocpu.seturl( "http://localhost:8081/ocpu/library/UploadSHP/R" );
+	
+	// Set file and header
+	var shpfile = $("#shpfile")[0].files[0];
+	
+	// Convert SHP file to GeoJSON
+	var req = ocpu.rpc( "togeojson", {
+		file : shpfile
+		}, function( session )
+		{
+			var output = JSON.parse(session);
+			console.log( output );
+			
+			// Apply GeoJSON to layer
+			var jsonStyle = function( feature ) {};
+			var jsonFeature = function( feature, layer ) {};
+			var jsonName = "New Layer";
+			setOverlayMapVar(output, jsonStyle, jsonFeature, jsonName);
+		} );
+	
+	// (Optional) Display alert if upload function fail
+	req.fail( function()
+	{
+		alert( "Sorry, we encountered an error while processing the data. Please re-upload the file." );
+	} );
+}
+
+/* Call uploadSHP function when submit button is clicked */
+$("#submit-shp").on("click", function() 
+{
+	uploadSHP();
+});
+
+/* Hide loading notification when all AJAX request complete */
 $( document ).ajaxComplete(function() {
 	// Hide loading notification
 	map.spin( false );
