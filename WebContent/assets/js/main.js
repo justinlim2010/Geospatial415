@@ -129,7 +129,8 @@ function setOverlayMapFile(fileLoc, layerStyle, layerFeature, layerName) {
 }
 
 /* This function will set the overlay map from variable */
-function setOverlayMapVar(file, layerStyle, layerFeature, layerName) {
+function setOverlayMapVar(file, layerStyle, layerFeature, layerName) 
+{
 	// Display loading notification
 	map.spin( true );
 	
@@ -167,7 +168,7 @@ $.ajax( {
       $.each( element, function( index, element )
       {
         // Create coordinate data
-        var coordinate = [ element.long, element.lat ];
+        var coordinate = [ parseFloat(element.long), parseFloat(element.lat) ];
 
         // Create the geometry data
         var geometry = {
@@ -243,14 +244,17 @@ function setSidebar()
 function uploadSHP()
 {
 	// Set opencpu url
-	ocpu.seturl( "http://localhost:8081/ocpu/library/UploadSHP/R" );
+	ocpu.seturl( "http://localhost:8081/ocpu/library/needForSpeed/R" );
 	
 	// Set file and header
 	var shpfile = $("#shpfile")[0].files[0];
+	var shpprojection = $("#shpprojection").val();
+	var layername = $("#shplayername").val();
 	
 	// Convert SHP file to GeoJSON
 	var req = ocpu.rpc( "togeojson", {
-		file : shpfile
+		file : shpfile,
+		projection : shpprojection
 		}, function( session )
 		{
 			var output = JSON.parse(session);
@@ -259,7 +263,7 @@ function uploadSHP()
 			// Apply GeoJSON to layer
 			var jsonStyle = function( feature ) {};
 			var jsonFeature = function( feature, layer ) {};
-			var jsonName = "New Layer";
+			var jsonName = layername;
 			setOverlayMapVar(output, jsonStyle, jsonFeature, jsonName);
 		} );
 	
@@ -274,6 +278,65 @@ function uploadSHP()
 $("#submit-shp").on("click", function() 
 {
 	uploadSHP();
+});
+
+/* Call uploadSHP function when submit button is clicked */
+$("#submit-json").on("click", function() 
+{
+	// Set opencpu url
+	ocpu.seturl( "http://localhost:8081/ocpu/library/needForSpeed/R" );
+	
+	// Set file and header
+	var jsonfile = $("#jsonfile")[0].files[0];
+	var jsonprojection = $("#jsonprojection").val();
+	var layername = $("#jsonlayername").val();
+	
+	var reader = new FileReader();
+	reader.readAsText(jsonfile);
+
+	reader.onload = function(e) {
+		var content = reader.result;
+		
+		// Convert SHP file to GeoJSON
+		var req = ocpu.rpc( "transformProjection", {
+			text : content,
+			projection : jsonprojection
+			}, function( session )
+			{
+				var output = JSON.parse(session);
+				console.log( output );
+				
+				// Apply GeoJSON to layer
+				var jsonStyle = function( feature ) {};
+				var jsonFeature = function( feature, layer ) {};
+				var jsonName = layername;
+				setOverlayMapVar(output, jsonStyle, jsonFeature, jsonName);
+			} );
+		
+		// (Optional) Display alert if upload function fail
+		req.fail( function()
+		{
+			alert( "Sorry, we encountered an error while processing the data. Please re-upload the file." );
+		} );
+	};
+//	////
+//	// Set file and header
+//	var jsonfile = $("#jsonfile")[0].files[0];
+//	var layername = $("#jsonlayername").val();
+//	
+//	var reader = new FileReader();
+//	reader.readAsText(jsonfile);
+//	
+//	reader.onload = function(e) {
+//		var content = JSON.parse(reader.result);
+//		
+//		// Apply GeoJSON to layer
+//		console.log( content );
+//		var jsonStyle = function( feature ) {};
+//		var jsonFeature = function( feature, layer ) {};
+//		var jsonName = layername;
+//		setOverlayMapVar(content, jsonStyle, jsonFeature, jsonName);
+//	};
 });
 
 /* Hide loading notification when all AJAX request complete */
