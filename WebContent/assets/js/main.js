@@ -280,7 +280,7 @@ $("#submit-shp").on("click", function()
 	uploadSHP();
 });
 
-/* Call uploadSHP function when submit button is clicked */
+/* Transform GeoJSON projection when submit button is clicked */
 $("#submit-json").on("click", function() 
 {
 	// Set opencpu url
@@ -304,7 +304,6 @@ $("#submit-json").on("click", function()
 			}, function( session )
 			{
 				var output = JSON.parse(session);
-				console.log( output );
 				
 				// Apply GeoJSON to layer
 				var jsonStyle = function( feature ) {};
@@ -319,24 +318,6 @@ $("#submit-json").on("click", function()
 			alert( "Sorry, we encountered an error while processing the data. Please re-upload the file." );
 		} );
 	};
-//	////
-//	// Set file and header
-//	var jsonfile = $("#jsonfile")[0].files[0];
-//	var layername = $("#jsonlayername").val();
-//	
-//	var reader = new FileReader();
-//	reader.readAsText(jsonfile);
-//	
-//	reader.onload = function(e) {
-//		var content = JSON.parse(reader.result);
-//		
-//		// Apply GeoJSON to layer
-//		console.log( content );
-//		var jsonStyle = function( feature ) {};
-//		var jsonFeature = function( feature, layer ) {};
-//		var jsonName = layername;
-//		setOverlayMapVar(content, jsonStyle, jsonFeature, jsonName);
-//	};
 });
 
 /* Hide loading notification when all AJAX request complete */
