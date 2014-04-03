@@ -287,7 +287,7 @@ function calculateKDE()
 	var shpfile = $("#shpfile")[0].files[0];
 	
 	// Convert SHP file to GeoJSON
-	var req = $('#chart').rplot( "kde", {
+	var req = $('#chart').rplot( "plotChart", {
 			file : shpfile
 		});
 	
@@ -301,7 +301,7 @@ function calculateKDE()
 /* Call uploadSHP function when submit button is clicked */
 $("#submit-shp").on("click", function() 
 {
-	uploadSHP();
+	//uploadSHP();
 	calculateKDE();
 });
 
@@ -350,3 +350,19 @@ $( document ).ajaxComplete(function() {
 	// Hide loading notification
 	map.spin( false );
 });
+
+////set CORS to call "stocks" package on public server
+//ocpu.seturl("http://localhost:8081/ocpu/library/needForSpeed/R")
+//
+////call R function: stocks::smoothplot(ticker=ticker)
+//$(document).ready(function(){  
+//    var req = $("#chart").rplot("smoothplot", {
+//        ticker : "GOOG",
+//        from : "2013-01-01"
+//    });
+//    
+//    //optional
+//    req.fail(function(){
+//        alert("R returned an error: " + req.responseText); 
+//    });
+//});

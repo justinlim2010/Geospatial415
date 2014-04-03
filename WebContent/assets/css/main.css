@@ -6,6 +6,9 @@ html, body, #map {
 body {
   padding-top: 50px;
 }
+#chart {
+	height: 400px;
+}
 input[type="radio"], input[type="checkbox"] {
   margin: 0;
 }
