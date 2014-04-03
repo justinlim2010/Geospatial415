@@ -26,17 +26,17 @@ function initialize()
   getRoadIncidentData();
   
   // Get road section data and add to overlayMaps
-  var roadSectionFileLocation = "data/RoadSectionLine.geojson";
-  var roadSectionStyle = function( feature ) {
-	  return {
-		  color : "#808080",
-		  weight : 1,
-		  opacity : 1
-		  };
-  };
-  var RoadSectionFeature = function( feature, layer ) {};
-  var roadSectionLayerName = "Road Section";
-  setOverlayMapFile(roadSectionFileLocation, roadSectionStyle, RoadSectionFeature, roadSectionLayerName);
+//  var roadSectionFileLocation = "data/RoadSectionLine.geojson";
+//  var roadSectionStyle = function( feature ) {
+//	  return {
+//		  color : "#808080",
+//		  weight : 1,
+//		  opacity : 1
+//		  };
+//  };
+//  var RoadSectionFeature = function( feature, layer ) {};
+//  var roadSectionLayerName = "Road Section";
+//  setOverlayMapFile(roadSectionFileLocation, roadSectionStyle, RoadSectionFeature, roadSectionLayerName);
   
   // Get ERP Gantry data and add to overlayMaps
   var ERPGantryFileLocation = "data/ERPGantryPoint.geojson";
@@ -153,6 +153,7 @@ function setOverlayMapVar(file, layerStyle, layerFeature, layerName)
 	controlLayer.addTo( map );
 }
 
+/* Function to get real-time data feed from LTA */
 function getRoadIncidentData()
 {
 $.ajax( {
@@ -233,6 +234,7 @@ $.ajax( {
   } );
 }
 
+/* Function to set sidebar to map layer */
 function setSidebar()
 {
 	sidebar = L.control.sidebar("sidebar", {
@@ -241,6 +243,7 @@ function setSidebar()
 	  	}).addTo(map);
 }
 
+/* Function to convert SHPfile to GeoJSON format */
 function uploadSHP()
 {
 	// Set opencpu url
@@ -274,10 +277,32 @@ function uploadSHP()
 	} );
 }
 
+/* Call kde function from needForSpeed R package */
+function calculateKDE()
+{
+	// Set opencpu url
+	ocpu.seturl( "http://localhost:8081/ocpu/library/needForSpeed/R" );
+	
+	// Set file and header
+	var shpfile = $("#shpfile")[0].files[0];
+	
+	// Convert SHP file to GeoJSON
+	var req = $('#chart').rplot( "kde", {
+			file : shpfile
+		});
+	
+	// (Optional) Display alert if upload function fail
+	req.fail( function()
+	{
+		alert( "Sorry, we encountered an error while processing the data. Please re-upload the file." );
+	} );
+}
+
 /* Call uploadSHP function when submit button is clicked */
 $("#submit-shp").on("click", function() 
 {
 	uploadSHP();
+	calculateKDE();
 });
 
 /* Transform GeoJSON projection when submit button is clicked */
