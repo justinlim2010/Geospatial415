@@ -244,15 +244,21 @@ function setSidebar()
 }
 
 /* Function to convert SHPfile to GeoJSON format */
-function uploadSHP()
+function uploadSHP(args)
 {
 	// Set opencpu url
 	ocpu.seturl( "http://localhost:8081/ocpu/library/needForSpeed/R" );
 	
 	// Set file and header
-	var shpfile = $("#shpfile")[0].files[0];
-	var shpprojection = $("#shpprojection").val();
-	var layername = $("#shplayername").val();
+	var shpfile;
+		if(args==1) shpfile = $("#shpfile")[0].files[0];
+		else shpfile = $("#shpfile2")[0].files[0];
+	var shpprojection;
+		if(args==1) shpprojection = $("#shpprojection").val();
+		else shpprojection = $("#shpprojection2").val();
+	var layername;
+		if(args==1) layername = $("#shplayername").val();
+		else layername = $("#shplayername2").val();
 	
 	// Convert SHP file to GeoJSON
 	var req = ocpu.rpc( "togeojson", {
@@ -284,15 +290,43 @@ function calculateKDE()
 	ocpu.seturl( "http://localhost:8081/ocpu/library/needForSpeed/R" );
 	
 	// Set file and header
-	var shpfile = $("#shpfile")[0].files[0];
+	var shpfile = $("#shpfile2")[0].files[0];
 	
-	// Convert SHP file to GeoJSON
-	var req = $('#chart').rplot( "plotChart", {
+	var req;
+	if($('#analysis-choice').is(':checked')) 
+	{
+		var boundaryshpfile = $("#boundaryshpfile")[0].files[0];
+		// Compute advanced KDE
+		req = $('#chart').rplot( "kde", {
 			file : shpfile
 		});
+		
+		// Compute NNI
+		req = $('#chart3').rplot( "nni", {
+			file : shpfile,
+			boundary : boundaryshpfile
+		});
+	}
+	else
+	{
+		// Compute Simple KDE
+		req = $('#chart').rplot( "kde", {
+			file : shpfile
+		});
+	}
 	
 	// (Optional) Display alert if upload function fail
 	req.fail( function()
+	{
+		alert( "Sorry, we encountered an error while processing the data. Please re-upload the file." );
+	} );
+	
+	// Convert SHP file to GeoJSON
+	var req2 = $('#chart2').rplot( "lfunction", {
+			file : shpfile
+		});
+	// (Optional) Display alert if upload function fail
+	req2.fail( function()
 	{
 		alert( "Sorry, we encountered an error while processing the data. Please re-upload the file." );
 	} );
@@ -301,7 +335,13 @@ function calculateKDE()
 /* Call uploadSHP function when submit button is clicked */
 $("#submit-shp").on("click", function() 
 {
-	//uploadSHP();
+	uploadSHP(1);
+});
+
+/* Call uploadSHP function when submit button is clicked */
+$("#submit-shp2").on("click", function() 
+{
+	uploadSHP(2);
 	calculateKDE();
 });
 
@@ -343,6 +383,12 @@ $("#submit-json").on("click", function()
 			alert( "Sorry, we encountered an error while processing the data. Please re-upload the file." );
 		} );
 	};
+});
+
+/* Toggle boundary file for advanced analysis */
+$('#boundary-group').hide();
+$('#analysis-choice').change(function() {
+	$('#boundary-group').toggle();
 });
 
 /* Hide loading notification when all AJAX request complete */

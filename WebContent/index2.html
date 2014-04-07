@@ -48,6 +48,8 @@
             <ul class="dropdown-menu">
               <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" onclick="$('#upload-shpfile').modal('show'); return false;"><i class="fa fa-folder"></i>&nbsp;&nbsp;Upload Shapefile</a></li>
               <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" onclick="$('#upload-json').modal('show'); return false;"><i class="fa fa-file-text-o"></i>&nbsp;&nbsp;Upload GeoJSON</a></li>
+            	<li class="divider hidden-xs"></li>
+            	<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" onclick="$('#upload-shpfile2').modal('show'); return false;"><i class="fa fa-bar-chart-o"></i>&nbsp;&nbsp;Analyze Shapefile</a></li>
             </ul>
           </li>
           <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" onclick="sidebar.toggle(); showScatterPlot(chocolates); return false;"><i class="fa fa-bar-chart-o" style="color: white"></i>&nbsp;&nbsp;Analysis</a></li>
@@ -59,9 +61,10 @@
     <div class="container" id="map"></div>
     <div id="sidebar">
       <h2>Analysis</h2>
-      <p>A <a href="https://github.com/turbo87/leaflet-sidebar/">responsive sidebar plugin</a> for <a href="http://leafletjs.com/">Leaflet</a>, a JS library for interactive maps.</p>
-      <p class="lorem">Moran's I Scatter Plot</p>
+      <p>An analysis for the uploaded point data</p>
       <div id="chart"></div>
+      <div id="chart2"></div>
+      <div id="chart3"></div>
     </div>
 
     <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog">
@@ -91,7 +94,11 @@
                   <div class="panel-heading">Features</div>
                   <ul class="list-group">
                     <li class="list-group-item">Real-time data feed from Singapore Land Transport Authority</li>
-                    <li class="list-group-item">Kernel Density Analysis for Incidents Points</li>
+                    <li class="list-group-item">Kernel Density Analysis for Points data</li>
+                    <li class="list-group-item">L-Function Analysis for points data</li>
+                    <li class="list-group-item">Nearest Neighbor Index Analysis for points data</li>
+                    <li class="list-group-item">Upload and project SHPFile</li>
+                    <li class="list-group-item">Upload and project GeoJSON</li>
                   </ul>
                 </div>
               </div>
@@ -127,21 +134,66 @@
                 <div class="row">
                   <div class="col-md-10">
                     <div class="form-group">
-                      <label for="first-name">Shapefile:</label>
+                      <label for="shpfile">Shapefile:</label>
                       <input type="file" class="form-control" id="shpfile">
                     </div>
                     <div class="form-group">
-                      <label for="last-name">Projection:</label>
+                      <label for="shpprojection">Projection:</label>
                       <input type="text" class="form-control" id="shpprojection">
                     </div>
                     <div class="form-group">
-                      <label for="last-name">Layer name:</label>
+                      <label for="shplayername">Layer name:</label>
                       <input type="text" class="form-control" id="shplayername">
                     </div>
                   </div>
                   <div class="col-md-12">
                     <p>
                       <button type="submit" id="submit-shp" class="btn btn-primary pull-right" data-dismiss="modal">Submit</button>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    
+    <div class="modal fade" id="upload-shpfile2" tabindex="-1" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Upload Shapefile</h4>
+          </div>
+          <div class="modal-body">
+            <form id="upload-form">
+              <div class="well well-sm">
+                <div class="row">
+                  <div class="col-md-10">
+                    <div class="form-group">
+                      <label for="shpfile">Shapefile:</label>
+                      <input type="file" class="form-control" id="shpfile2">
+                    </div>
+                    <div class="form-group">
+                      <label for="shpprojection">Projection:</label>
+                      <input type="text" class="form-control" id="shpprojection2">
+                    </div>
+                    <div class="form-group">
+                      <label for="shplayername">Layer name:</label>
+                      <input type="text" class="form-control" id="shplayername2">
+                    </div>
+                    <div class="form-group">
+                      <input type="checkbox" id="analysis-choice"> Advanced Analysis
+                    </div>
+                    <div class="form-group" id="boundary-group">
+                      <label for="boundaryshpfile">Boundary Shapefile:</label>
+                      <input type="file" class="form-control" id="boundaryshpfile">
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <p>
+                      <button type="submit" id="submit-shp2" class="btn btn-primary pull-right" data-dismiss="modal">Submit</button>
                     </p>
                   </div>
                 </div>
