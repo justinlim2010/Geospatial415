@@ -1,110 +1,259 @@
-<!DOCTYPE HTML">
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="description" content="Geospatial Analysis Web Application">
+    <meta name="author" content="IS415 - Team Traffic King">
     <title>Traffic King :: Need For Speed</title>
 
-    <!--main stylesheet-->
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="assets/bootstrap-3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/bootstrap-3.1.1/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="assets/font-awesome-4.0.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/leaflet-0.7.2/leaflet.css">
+    <link rel="stylesheet" href="assets/leaflet-sidebar/L.Control.Sidebar.css">
+    <link rel="stylesheet" href="assets/leaflet-markercluster/MarkerCluster.css" />
+    <link rel="stylesheet" href="assets/leaflet-markercluster/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/graph.css">
 
-    <!--leaflet stylesheet-->
-    <link rel="stylesheet" href="css/leaflet.css"/>
-    <!--[if lte IE8]>
-    <link rel="stylesheet" href=css/leaflet.ie.css"/>
+    <link rel="apple-touch-icon" href="assets/img/favicon-152.png">
+    <link rel="shortcut icon" sizes="196x196" href="assets/img/favicon-196.png">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="assets/js/html5shiv.js"></script>
+        <script src="assets/js/respond.min.js"></script>
     <![endif]-->
-    <!-- <link rel="points" type="application/json" href="js/crimeIncidents.geojson"> -->
-
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="css/bootstrap.css">
-
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="css/bootstrap-theme.css">
-    <script src="js/leaflet-src.js"></script>
-    <script src="js/ajax.js"></script>
-    <script src="js/GeoJSON.js"></script>
-    <script src="js/promise.js"></script>
-    <script src="js/jsonp.js"></script>
-    <script src="js/jquery-1.11.0.js"></script>
-    <script src="js/opencpu-0.4.js"></script>
-    <link rel="stylesheet" href="css/MarkerCluster.css" />
-    <link rel="stylesheet" href="css/MarkerCluster.Default.css" />
-    <script src="js/leaflet.spin.js"></script>
-    <script src="js/spin.js"></script>
-    <!--[if lte IE 8]><link rel="stylesheet" href="../dist/MarkerCluster.Default.ie.css" /><![endif]-->
-    <script src="js/leaflet.markercluster-src.js"></script>
-
-    <!-- Latest compiled and minified JavaScript -->
-    <!-- <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script> -->
-
-
-    <style>
-        .info {
-    padding: 6px 8px;
-    font: 14px/16px Arial, Helvetica, sans-serif;
-    background: white;
-    background: rgba(255,255,255,0.8);
-    box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    border-radius: 5px;
-}
-.info h4 {
-    margin: 0 0 5px;
-    color: #777;
-}
-
-.legend {
-    line-height: 18px;
-    color: #555;
-}
-.legend i {
-    width: 18px;
-    height: 18px;
-    float: left;
-    margin-right: 8px;
-    opacity: 0.7;
-}
-    </style>
-
   </head>
-  <body id="btn-spin">
+
+  <body>
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">Singapore Traffic Congestion</a>
-        </div>
-        <div class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-            <!-- <li class="active"><a href="#">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li> -->
-          </ul>
-        </div><!--/.nav-collapse -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Need For Speed</a>
       </div>
+      <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" onclick="$('#aboutModal').modal('show'); return false;"><i class="fa fa-question-circle" style="color: white"></i>&nbsp;&nbsp;About</a></li>
+          <li class="dropdown">
+            <a id="toolsDrop" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-wrench" style="color: white"></i>&nbsp;&nbsp;Tools <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" onclick="$('#upload-shpfile').modal('show'); return false;"><i class="fa fa-folder"></i>&nbsp;&nbsp;Upload Shapefile</a></li>
+              <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" onclick="$('#upload-json').modal('show'); return false;"><i class="fa fa-file-text-o"></i>&nbsp;&nbsp;Upload GeoJSON</a></li>
+            	<li class="divider hidden-xs"></li>
+            	<li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" onclick="$('#upload-shpfile2').modal('show'); return false;"><i class="fa fa-bar-chart-o"></i>&nbsp;&nbsp;Analyze Shapefile</a></li>
+            </ul>
+          </li>
+          <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" onclick="sidebar.toggle(); showScatterPlot(chocolates); return false;"><i class="fa fa-bar-chart-o" style="color: white"></i>&nbsp;&nbsp;Analysis</a></li>
+        </ul>
+      </div><!--/.navbar-collapse -->
     </div>
-      <!-- <button id="btn-spin">Spin Top-Left !</button> -->
 
     <div id="progress"><div id="progress-bar"></div></div>
     <div class="container" id="map"></div>
+    <div id="sidebar">
+      <h2>Analysis</h2>
+      <p>An analysis for the uploaded point data</p>
+      <div id="chart"></div>
+      <div id="chart2"></div>
+      <div id="chart3"></div>
+    </div>
 
+    <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button class="close" type="button" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Welcome to Need For Speed Web Application!</h4>
+          </div>
+          <div class="modal-body">
+            <ul class="nav nav-tabs" id="aboutTabs">
+              <li class="active"><a href="#about" data-toggle="tab"><i class="fa fa-question-circle"></i>&nbsp;About the project</a></li>
+              <li><a href="#about-us" data-toggle="tab"><i class="fa fa-users"></i>&nbsp;About Us</a></li>
+              <li><a href="#disclaimer" data-toggle="tab"><i class="fa fa-exclamation-circle"></i>&nbsp;Disclaimer</a></li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-globe"></i>&nbsp;Metadata <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#incidents-point" data-toggle="tab">Incidents Location</a></li>
+                  <li><a href="#road-section" data-toggle="tab">Road Section</a></li>
+                </ul>
+              </li>
+            </ul>
+            <div class="tab-content" id="aboutTabsContent" style="padding-top: 10px;">
+              <div class="tab-pane fade active in" id="about">
+                <p>A geospatial analysis web application that aims to deliver analysis on traffic congestion based on road incidents location.</p>
+                <div class="panel panel-primary">
+                  <div class="panel-heading">Features</div>
+                  <ul class="list-group">
+                    <li class="list-group-item">Real-time data feed from Singapore Land Transport Authority</li>
+                    <li class="list-group-item">Kernel Density Analysis for Points data</li>
+                    <li class="list-group-item">L-Function Analysis for points data</li>
+                    <li class="list-group-item">Nearest Neighbor Index Analysis for points data</li>
+                    <li class="list-group-item">Upload and project SHPFile</li>
+                    <li class="list-group-item">Upload and project GeoJSON</li>
+                  </ul>
+                </div>
+              </div>
+              <div id="disclaimer" class="tab-pane fade text-danger">
+                <p>The data provided on this site is for informational and planning purposes only.</p>
+                <p>Absolutely no accuracy or completeness guarantee is implied or intended. All information on this map is subject to such variations and corrections as might result from a complete title search and/or accurate field survey.</p>
+              </div>
+              <div class="tab-pane fade" id="about-us">
+                <p>A student from Singapore Management University - School of Information System</p>
+              </div>
+              <div class="tab-pane fade" id="incidents-point">
+                <p>Incidents points courtesy of <a href="http://www.mytransport.sg/content/mytransport/home/dataMall.html#Geospatial" target="_blank">Singapore Land Transport Authority</a></p>
+              </div>
+              <div class="tab-pane fade" id="road-section">
+                <p>Road section line data courtesy of <a href="http://www.mytransport.sg/content/mytransport/home/dataMall.html#Geospatial" target="_blank">Singapore Land Transport Authority</a></p>
+              </div>
+            </div>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 
-    <!--libraries-->
-    <!-- // <script src="data/crimeIncidents.geojson" type="text/javascript"></script> -->
-    <!-- // <script src="data/population_density.geojson" type="text/javascript"></script> -->
-
-
-    <!-- // <script src="http://code.jquery.com/jquery.js"></script> -->
-
-    <!--link to main javascript file-->
-    <script src="js/xml2json.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-
-
-
+    <div class="modal fade" id="upload-shpfile" tabindex="-1" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Upload Shapefile</h4>
+          </div>
+          <div class="modal-body">
+            <form id="upload-form">
+              <div class="well well-sm">
+                <div class="row">
+                  <div class="col-md-10">
+                    <div class="form-group">
+                      <label for="shpfile">Shapefile:</label>
+                      <input type="file" class="form-control" id="shpfile">
+                    </div>
+                    <div class="form-group">
+                      <label for="shpprojection">Projection:</label>
+                      <input type="text" class="form-control" id="shpprojection">
+                    </div>
+                    <div class="form-group">
+                      <label for="shplayername">Layer name:</label>
+                      <input type="text" class="form-control" id="shplayername">
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <p>
+                      <button type="submit" id="submit-shp" class="btn btn-primary pull-right" data-dismiss="modal">Submit</button>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    
+    <div class="modal fade" id="upload-shpfile2" tabindex="-1" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Upload Shapefile</h4>
+          </div>
+          <div class="modal-body">
+            <form id="upload-form">
+              <div class="well well-sm">
+                <div class="row">
+                  <div class="col-md-10">
+                    <div class="form-group">
+                      <label for="shpfile">Shapefile:</label>
+                      <input type="file" class="form-control" id="shpfile2">
+                    </div>
+                    <div class="form-group">
+                      <label for="shpprojection">Projection:</label>
+                      <input type="text" class="form-control" id="shpprojection2">
+                    </div>
+                    <div class="form-group">
+                      <label for="shplayername">Layer name:</label>
+                      <input type="text" class="form-control" id="shplayername2">
+                    </div>
+                    <div class="form-group">
+                      <input type="checkbox" id="analysis-choice"> Advanced Analysis
+                    </div>
+                    <div class="form-group" id="boundary-group">
+                      <label for="boundaryshpfile">Boundary Shapefile:</label>
+                      <input type="file" class="form-control" id="boundaryshpfile">
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <p>
+                      <button type="submit" id="submit-shp2" class="btn btn-primary pull-right" data-dismiss="modal">Submit</button>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    
+    <div class="modal fade" id="upload-json" tabindex="-1" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Upload GeoJSON</h4>
+          </div>
+          <div class="modal-body">
+            <form id="upload-form">
+              <div class="well well-sm">
+                <div class="row">
+                  <div class="col-md-10">
+                    <div class="form-group">
+                      <label for="first-name">GeoJSON:</label>
+                      <input type="file" class="form-control" id="jsonfile">
+                    </div>
+                    <div class="form-group">
+                      <label for="last-name">Projection:</label>
+                      <input type="text" class="form-control" id="jsonprojection">
+                    </div>
+	                  <div class="form-group">
+	                    <label for="last-name">Layer name:</label>
+	                    <input type="text" class="form-control" id="jsonlayername">
+	                  </div>
+                  </div>
+                  <div class="col-md-12">
+                    <p>
+                      <button type="submit" id="submit-json" class="btn btn-primary pull-right" data-dismiss="modal">Submit</button>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+	
+	<script src="assets/js/jquery-1.11.0.min.js"></script>
+	<script src="assets/d3/d3.js"></script>
+	<script src="assets/opencpu/opencpu-0.5.js"></script>
+	<script src="assets/bootstrap-3.1.1/js/bootstrap.min.js"></script>
+	<script src="assets/typeahead/typeahead.bundle.min.js"></script>
+	<script src="assets/leaflet-0.7.2/leaflet-src.js"></script>
+	<script src="assets/leaflet-ajax/leaflet.ajax.js"></script>
+	<script src="assets/leaflet-sidebar/L.Control.Sidebar.js"></script>
+	<script src="assets/leaflet-spin/leaflet.spin.js"></script>
+	<script src="assets/jquery-spin/spin.js"></script>
+	<script src="assets/leaflet-markercluster/leaflet.markercluster-src.js"></script>
+	<script src="assets/js/main.js"></script>
+	<script src="assets/js/graph.js"></script>
   </body>
 </html>

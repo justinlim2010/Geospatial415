@@ -39,7 +39,6 @@ public class TrafficIncidents extends HttpServlet {
   @Override
   protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException,
       IOException {
-    System.out.println("In servlet");
     // TODO Auto-generated method stub
     final ArrayList<String> list = new ArrayList<String>();
     int skip = 0;
