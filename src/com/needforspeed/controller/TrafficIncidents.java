@@ -55,8 +55,8 @@ public class TrafficIncidents extends HttpServlet {
         final URL url = new URL(apiUrl);
         final URLConnection conn = url.openConnection();
         conn.setRequestProperty("accept", "*/*");
-        conn.addRequestProperty("AccountKey", "JeS9FEbhVVVni7Mzu6HS4A==");
-        conn.addRequestProperty("UniqueUserID", "69805977-2bfd-47c6-873e-88fadd92c06a");
+        conn.addRequestProperty("AccountKey", "BzZrEiZ6SOd8kh1NtikXAA==");
+        conn.addRequestProperty("UniqueUserID", "9fa6714e-f048-4193-83b1-db366434fb14");
         final BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
         // while ((line = br.readLine()) != null) {
