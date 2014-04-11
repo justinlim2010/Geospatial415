@@ -247,7 +247,7 @@ function setSidebar()
 function uploadSHP(args)
 {
 	// Set opencpu url
-	ocpu.seturl( "http://localhost:8081/ocpu/library/needForSpeed/R" );
+	ocpu.seturl( "https://public.opencpu.org/ocpu/github/alfredkk/IS415R/R" );
 	
 	// Set file and header
 	var shpfile;
@@ -287,7 +287,7 @@ function uploadSHP(args)
 function calculateKDE()
 {
 	// Set opencpu url
-	ocpu.seturl( "http://localhost:8081/ocpu/library/needForSpeed/R" );
+	ocpu.seturl( "https://public.opencpu.org/ocpu/github/alfredkk/IS415R/R" );
 	
 	// Set file and header
 	var shpfile = $("#shpfile2")[0].files[0];
@@ -349,7 +349,7 @@ $("#submit-shp2").on("click", function()
 $("#submit-json").on("click", function() 
 {
 	// Set opencpu url
-	ocpu.seturl( "http://localhost:8081/ocpu/library/needForSpeed/R" );
+	ocpu.seturl( "https://public.opencpu.org/ocpu/github/alfredkk/IS415R/R" );
 	
 	// Set file and header
 	var jsonfile = $("#jsonfile")[0].files[0];
